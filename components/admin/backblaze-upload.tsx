@@ -70,7 +70,7 @@ export function BackblazeUpload({ kind, inputName, initialJson, label }: { kind:
       if (!response.ok || !data.uploadUrl || !data.asset) throw new Error(data.error || "Could not authorize upload");
       await uploadToSignedUrl(data.uploadUrl, file, (percent) => setStatus(`Uploading to Backblaze… ${percent}%`));
       setAssetJson(JSON.stringify({ ...data.asset, ...metadata }));
-      setStatus(`${file.name} uploaded successfully`);
+      setStatus(`${file.name} uploaded — save or publish below to attach it`);
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Upload failed");
     } finally {

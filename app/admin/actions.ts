@@ -31,6 +31,7 @@ function uploadedMedia(value?: string) {
 
 export async function saveVideoAction(formData: FormData) {
   const session = await requireAdmin();
+  const intent = String(formData.get("intent") || "save");
   const parsed = videoInputSchema.safeParse(parseFormData(formData));
   if (!parsed.success) redirect(`/admin/videos${String(formData.get("id") || "") ? `/${formData.get("id")}/edit` : "/new"}?error=validation`);
   const input = parsed.data;
@@ -41,11 +42,14 @@ export async function saveVideoAction(formData: FormData) {
   const submittedVideo = parseStorageAsset(input.assetJson, "video");
   const submittedPoster = parseStorageAsset(input.posterJson, "image");
   if ((input.assetJson && !submittedVideo) || (input.posterJson && !submittedPoster)) redirect(`/admin/videos${input.id ? `/${input.id}/edit` : "/new"}?error=validation`);
-  if ((submittedVideo && !(await storedAssetExists(submittedVideo))) || (submittedPoster && !(await storedAssetExists(submittedPoster)))) redirect(`/admin/videos${input.id ? `/${input.id}/edit` : "/new"}?error=media-required`);
+  if ((submittedVideo && !(await storedAssetExists(submittedVideo))) || (submittedPoster && !(await storedAssetExists(submittedPoster)))) redirect(`/admin/videos${input.id ? `/${input.id}/edit` : "/new"}?error=storage-verification`);
   const videoAsset = submittedVideo ?? existing?.videoAsset ?? null;
   const poster = submittedPoster ?? existing?.poster ?? null;
+  if (intent === "publish" && !videoAsset) redirect(`/admin/videos${input.id ? `/${input.id}/edit` : "/new"}?error=media-required`);
   const categoryId = input.categoryId && ObjectId.isValid(input.categoryId) ? new ObjectId(input.categoryId) : null;
   const slug = existing?.slug ?? await uniqueSlug(input.title, slugify(input.title), input.id);
+  const status: VideoStatus = intent === "publish" ? "published" : existing?.status ?? "draft";
+  const publishedAt = status === "published" ? existing?.publishedAt ?? now : existing?.publishedAt ?? null;
   const update = {
     title: input.title,
     slug,
@@ -57,6 +61,8 @@ export async function saveVideoAction(formData: FormData) {
     videoAsset,
     poster,
     media: input.assetJson ? uploadedMedia(input.assetJson) : existing?.media,
+    status,
+    publishedAt,
     updatedAt: now,
     updatedBy: new ObjectId(session.userId),
   };
@@ -68,9 +74,7 @@ export async function saveVideoAction(formData: FormData) {
   } else {
     const result = await db.collection<VideoDocument>("videos").insertOne({
       ...update,
-      status: "draft",
       viewCount: 0,
-      publishedAt: null,
       createdAt: now,
       createdBy: new ObjectId(session.userId),
     });
@@ -79,7 +83,7 @@ export async function saveVideoAction(formData: FormData) {
   await audit(session.userId, existing ? "video.updated" : "video.created", "video", savedId);
   revalidatePath("/");
   revalidatePath("/admin/videos");
-  redirect(`/admin/videos/${savedId.toHexString()}/edit?success=saved`);
+  redirect(`/admin/videos/${savedId.toHexString()}/edit?success=${intent === "publish" ? "published" : "saved"}`);
 }
 
 export async function setVideoStatusAction(formData: FormData) {
