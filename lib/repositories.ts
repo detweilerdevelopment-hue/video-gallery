@@ -1,28 +1,16 @@
 import "server-only";
 
 import { ObjectId, type Filter } from "mongodb";
+import { DEFAULT_SETTINGS } from "@/lib/default-settings";
 import { getDb } from "@/lib/db";
+import { isLocalDemoMode } from "@/lib/env";
 import { escapeRegex } from "@/lib/security";
 import type { CategoryDocument, SiteSettingsDocument, VideoDocument } from "@/lib/types";
 
-export const DEFAULT_SETTINGS: SiteSettingsDocument = {
-  key: "main",
-  siteName: "FrameVault",
-  heroEyebrow: "Curated video library",
-  heroTitle: "Watch. Discover. Return anytime.",
-  heroDescription: "A considered collection of films, stories, and conversations.",
-  heroImageAlt: "Featured video production",
-  aboutHeading: "A simple home for remarkable stories.",
-  aboutBody: "Explore a growing collection of films, documentaries, nature studies, and conversations.",
-  showFeaturedOverlay: true,
-  aboutPageLabel: "About",
-  aboutPageContent: "",
-  privacyPolicyLabel: "Privacy policy",
-  privacyPolicyContent: "",
-  updatedAt: new Date(0),
-};
+export { DEFAULT_SETTINGS } from "@/lib/default-settings";
 
 export async function getSettings() {
+  if (isLocalDemoMode()) return DEFAULT_SETTINGS;
   const db = await getDb();
   const saved = await db.collection<SiteSettingsDocument>("siteSettings").findOne({ key: "main" });
   if (!saved) return DEFAULT_SETTINGS;
@@ -36,12 +24,14 @@ export async function getSettings() {
 }
 
 export async function getCategories(includeInactive = false) {
+  if (isLocalDemoMode()) return [];
   const db = await getDb();
   const filter = includeInactive ? {} : { isActive: true };
   return db.collection<CategoryDocument>("categories").find(filter).sort({ sortOrder: 1, name: 1 }).toArray();
 }
 
 export async function getPublishedVideos(options: { query?: string; categorySlug?: string; limit?: number; page?: number; offset?: number } = {}) {
+  if (isLocalDemoMode()) return [];
   const db = await getDb();
   const filter: Filter<VideoDocument> = { status: "published" };
   if (options.query?.trim()) {
@@ -63,11 +53,13 @@ export async function getPublishedVideos(options: { query?: string; categorySlug
 }
 
 export async function getVideoBySlug(slug: string) {
+  if (isLocalDemoMode()) return null;
   const db = await getDb();
   return db.collection<VideoDocument>("videos").findOne({ slug, status: "published" });
 }
 
 export async function getVideoById(id: string) {
+  if (isLocalDemoMode()) return null;
   if (!ObjectId.isValid(id)) return null;
   const db = await getDb();
   return db.collection<VideoDocument>("videos").findOne({ _id: new ObjectId(id) });
@@ -79,6 +71,7 @@ export async function getAllVideos() {
 }
 
 export async function getPublishedVideoIndex() {
+  if (isLocalDemoMode()) return [];
   const db = await getDb();
   return db.collection<VideoDocument>("videos").find(
     { status: "published" },

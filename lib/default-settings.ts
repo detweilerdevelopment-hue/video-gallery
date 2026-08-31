@@ -1,0 +1,27 @@
+import type { SiteSettingsDocument } from "@/lib/types";
+
+export const DEFAULT_SETTINGS: SiteSettingsDocument = {
+  key: "main",
+  siteName: "FrameVault",
+  heroEyebrow: "Curated video library",
+  heroTitle: "Watch. Discover. Return anytime.",
+  heroDescription: "A considered collection of films, stories, and conversations.",
+  heroImageAlt: "Featured video production",
+  aboutHeading: "A simple home for remarkable stories.",
+  aboutBody: "Explore a growing collection of films, documentaries, nature studies, and conversations.",
+  showFeaturedOverlay: true,
+  aboutPageLabel: "About",
+  aboutPageContent: "",
+  privacyPolicyLabel: "Privacy policy",
+  privacyPolicyContent: "",
+  ageGateTitle: "Are you 18 years or older?",
+  ageGateDescription: "This website contains podcasts and conversations intended for an adult audience. You must confirm your age before continuing.",
+  ageGateAcceptLabel: "Yes, I am 18 or older",
+  ageGateDeclineLabel: "No, I am under 18",
+  cookieGateTitle: "May we use cookies?",
+  cookieGateDescription: "We use a cookie to remember your consent and avoid asking this question on your next visit. Your age will still be confirmed every time you enter the website.",
+  cookieGateAcceptLabel: "Yes, accept cookies",
+  cookieGateDeclineLabel: "No, do not accept",
+  cookieConsentVersion: "1",
+  updatedAt: new Date(0),
+};

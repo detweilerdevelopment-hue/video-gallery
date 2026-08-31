@@ -38,7 +38,7 @@ Production video gallery and small content-management system built with Next.js,
    node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
    ```
 
-5. Set temporary `ADMIN_EMAIL` and `ADMIN_PASSWORD` variables in `.env.local`, then initialize indexes, site settings, categories, and the first owner:
+5. Set temporary `ADMIN_EMAIL` and an `ADMIN_PASSWORD` of at least eight characters in `.env.local`, then initialize indexes, site settings, categories, and the first owner:
 
    ```powershell
    npm run seed

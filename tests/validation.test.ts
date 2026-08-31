@@ -64,6 +64,26 @@ describe("content validation", () => {
     expect(siteSettingsInputSchema.safeParse(settings).success).toBe(false);
   });
 
+  it("accepts editable visitor entry questions", () => {
+    const result = siteSettingsInputSchema.parse({
+      siteName: "FrameVault",
+      heroEyebrow: "Curated films",
+      heroTitle: "Watch remarkable stories",
+      heroDescription: "A complete homepage description.",
+      heroImageAlt: "A production set",
+      ageGateTitle: "Have you reached the legal age of 18?",
+      ageGateDescription: "Please confirm that you are legally permitted to view adult-themed podcast content.",
+      ageGateAcceptLabel: "Yes, continue",
+      ageGateDeclineLabel: "No, leave this site",
+      cookieGateTitle: "Do you consent to cookies?",
+      cookieGateDescription: "We store your consent choice in a cookie on this device.",
+      cookieGateAcceptLabel: "Accept cookies",
+      cookieGateDeclineLabel: "Decline cookies",
+    });
+    expect(result.ageGateTitle).toContain("legal age");
+    expect(result.cookieGateAcceptLabel).toBe("Accept cookies");
+  });
+
   it("requires useful category names", () => {
     expect(categoryInputSchema.safeParse({ name: "A", sortOrder: 0 }).success).toBe(false);
   });

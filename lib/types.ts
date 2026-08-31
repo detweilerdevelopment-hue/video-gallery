@@ -62,6 +62,15 @@ export interface SiteSettingsDocument {
   aboutPageContent: string;
   privacyPolicyLabel: string;
   privacyPolicyContent: string;
+  ageGateTitle: string;
+  ageGateDescription: string;
+  ageGateAcceptLabel: string;
+  ageGateDeclineLabel: string;
+  cookieGateTitle: string;
+  cookieGateDescription: string;
+  cookieGateAcceptLabel: string;
+  cookieGateDeclineLabel: string;
+  cookieConsentVersion: string;
   updatedAt: Date;
   updatedBy?: ObjectId;
 }

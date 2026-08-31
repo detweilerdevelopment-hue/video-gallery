@@ -15,3 +15,13 @@ html{overflow-y:scroll;scrollbar-gutter:stable}
 .hero-card{display:block}.hero-card-link{transition:border-color .2s,transform .2s}.hero-card-link:hover{border-color:#65707b;transform:translateY(-2px)}.hero-card-link:focus-visible{outline:2px solid var(--accent);outline-offset:4px}.video-copy>.eyebrow{font-size:17px}.video-copy h1{font-size:clamp(40px,5vw,60px)}
 .content-page{min-height:calc(100vh - 190px);padding-top:70px;padding-bottom:90px}.content-page article{max-width:850px}.content-page h1{font-size:clamp(42px,6vw,68px)}.page-copy{margin-top:32px;color:#d5d9de;font-size:16px;line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere}.page-empty{color:var(--muted);font-style:italic}.page-content-input{min-height:320px!important}.content-settings-grid{margin-top:24px}
 @media(max-width:650px){.footer-simple{align-items:flex-start;flex-direction:column}.footer-page-links{justify-content:flex-start}.content-page{padding-top:45px}}
+
+/* Public entry requirements */
+.entry-gate{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:24px;background:rgba(4,5,7,.94);backdrop-filter:blur(18px)}
+.entry-gate-card{width:min(620px,100%);padding:clamp(30px,6vw,56px);text-align:center;background:linear-gradient(145deg,#1a1e24,#101216);border:1px solid #343b45;border-radius:20px;box-shadow:0 28px 90px rgba(0,0,0,.5)}
+.entry-gate-mark{display:grid;place-items:center;width:52px;height:52px;margin:0 auto 30px;border:1px solid var(--accent);border-radius:50%;color:var(--accent);font-size:13px;font-weight:900;letter-spacing:.12em}
+.entry-gate-card h1{margin:16px 0;font-size:clamp(38px,7vw,58px)}
+.entry-gate-card p{max-width:500px;margin:0 auto 30px;color:var(--muted);font-size:16px;line-height:1.75}
+.entry-gate-actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.entry-gate-actions button{min-width:190px}
+@media(max-width:520px){.entry-gate{padding:14px}.entry-gate-card{padding:32px 20px}.entry-gate-actions{flex-direction:column}.entry-gate-actions button{width:100%}}

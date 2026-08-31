@@ -6,12 +6,12 @@ async function main() {
   const [{ hash }, { getDb, ensureIndexes }, { DEFAULT_SETTINGS }, { slugify }] = await Promise.all([
     import("bcryptjs"),
     import("@/lib/db"),
-    import("@/lib/repositories"),
+    import("@/lib/default-settings"),
     import("@/lib/validation"),
   ]);
   const email = String(process.env.ADMIN_EMAIL || "").trim().toLowerCase();
   const password = String(process.env.ADMIN_PASSWORD || "");
-  if (!email || password.length < 12) throw new Error("Set ADMIN_EMAIL and an ADMIN_PASSWORD of at least 12 characters");
+  if (!email || password.length < 8) throw new Error("Set ADMIN_EMAIL and an ADMIN_PASSWORD of at least 8 characters");
 
   await ensureIndexes();
   const db = await getDb();

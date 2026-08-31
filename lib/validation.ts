@@ -40,6 +40,14 @@ export const siteSettingsInputSchema = z.object({
   aboutPageContent: z.string().trim().max(50_000).default(""),
   privacyPolicyLabel: z.string().trim().min(2).max(80).default("Privacy policy"),
   privacyPolicyContent: z.string().trim().max(50_000).default(""),
+  ageGateTitle: z.string().trim().min(5).max(200).default("Are you 18 years or older?"),
+  ageGateDescription: z.string().trim().min(10).max(1_000).default("This website contains podcasts and conversations intended for an adult audience. You must confirm your age before continuing."),
+  ageGateAcceptLabel: z.string().trim().min(2).max(100).default("Yes, I am 18 or older"),
+  ageGateDeclineLabel: z.string().trim().min(2).max(100).default("No, I am under 18"),
+  cookieGateTitle: z.string().trim().min(5).max(200).default("May we use cookies?"),
+  cookieGateDescription: z.string().trim().min(10).max(1_000).default("We use a cookie to remember your consent and avoid asking this question on your next visit. Your age will still be confirmed every time you enter the website."),
+  cookieGateAcceptLabel: z.string().trim().min(2).max(100).default("Yes, accept cookies"),
+  cookieGateDeclineLabel: z.string().trim().min(2).max(100).default("No, do not accept"),
 });
 
 export function slugify(value: string) {

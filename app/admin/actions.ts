@@ -117,7 +117,13 @@ export async function saveSettingsAction(formData: FormData) {
   }
   const featuredVideoId = parsed.data.featuredVideoId && ObjectId.isValid(parsed.data.featuredVideoId) ? new ObjectId(parsed.data.featuredVideoId) : null;
   const { heroImageJson: _heroImageJson, ...fields } = parsed.data;
-  await db.collection<SiteSettingsDocument>("siteSettings").updateOne({ key: "main" }, { $set: { ...fields, heroImage, featuredVideoId, updatedAt: new Date(), updatedBy: new ObjectId(session.userId) } }, { upsert: true });
+  const cookiePromptChanged = !existing
+    || existing.cookieGateTitle !== fields.cookieGateTitle
+    || existing.cookieGateDescription !== fields.cookieGateDescription
+    || existing.cookieGateAcceptLabel !== fields.cookieGateAcceptLabel
+    || existing.cookieGateDeclineLabel !== fields.cookieGateDeclineLabel;
+  const cookieConsentVersion = cookiePromptChanged ? String(Date.now()) : existing.cookieConsentVersion ?? "1";
+  await db.collection<SiteSettingsDocument>("siteSettings").updateOne({ key: "main" }, { $set: { ...fields, heroImage, featuredVideoId, cookieConsentVersion, updatedAt: new Date(), updatedBy: new ObjectId(session.userId) } }, { upsert: true });
   await audit(session.userId, "settings.updated", "siteSettings");
   revalidatePath("/");
   revalidatePath("/about");

@@ -8,13 +8,24 @@ const serverSchema = z.object({
 });
 
 export function getServerEnv() {
-  const result = serverSchema.safeParse(process.env);
+  const result = serverSchema.safeParse({
+    ...process.env,
+    APP_URL: process.env.APP_URL || process.env.URL || "http://localhost:3000",
+  });
   if (!result.success) {
     throw new Error(
       `Invalid server environment: ${result.error.issues.map((issue) => issue.path.join(".")).join(", ")}`,
     );
   }
   return result.data;
+}
+
+export function isLocalDemoMode() {
+  return process.env.NODE_ENV !== "production" && !process.env.MONGODB_URI;
+}
+
+export function hasServerConfiguration() {
+  return Boolean(process.env.MONGODB_URI && process.env.AUTH_SECRET);
 }
 
 const backblazeSchema = z.object({
