@@ -18,7 +18,12 @@ async function createClient() {
 
 export async function getDb(): Promise<Db> {
   const { MONGODB_DB_NAME } = getServerEnv();
-  if (!global.__framevaultMongoClient) global.__framevaultMongoClient = createClient();
+  if (!global.__framevaultMongoClient) {
+    global.__framevaultMongoClient = createClient().catch((error) => {
+      global.__framevaultMongoClient = undefined;
+      throw error;
+    });
+  }
   const client = await global.__framevaultMongoClient;
   return client.db(MONGODB_DB_NAME);
 }
