@@ -54,11 +54,11 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ q
 
         <section className="wrap section" id="gallery">
           <div className="section-head">
-            <div><div className="eyebrow">Latest uploads</div><h2>The Gallery</h2></div>
-            <GallerySearch initialQuery={params.q} category={params.category} autoFocus={params.focus === "search"} />
+            <div><div className="eyebrow">{settings.galleryEyebrow}</div><h2>{settings.galleryTitle}</h2></div>
+            <GallerySearch initialQuery={params.q} category={params.category} autoFocus={params.focus === "search"} placeholder={settings.gallerySearchPlaceholder} buttonLabel={settings.gallerySearchButton} />
           </div>
           <div className="filters" aria-label="Filter by category">
-            <Link scroll={false} className={`filter ${!params.category ? "active" : ""}`} href={params.q ? `/?q=${encodeURIComponent(params.q)}` : "/"}>All</Link>
+            <Link scroll={false} className={`filter ${!params.category ? "active" : ""}`} href={params.q ? `/?q=${encodeURIComponent(params.q)}` : "/"}>{settings.galleryAllLabel}</Link>
             {categories.map((category) => (
               <Link scroll={false} key={category._id?.toHexString()} className={`filter ${params.category === category.slug ? "active" : ""}`} href={`/?category=${category.slug}${params.q ? `&q=${encodeURIComponent(params.q)}` : ""}`}>
                 {category.name}
@@ -70,7 +70,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ q
               {videos.map((video) => <VideoCard key={video._id?.toHexString()} video={video} category={video.categoryId ? categoriesById.get(video.categoryId.toHexString())?.name : undefined} />)}
             </div><div className="pagination">{page > 1 && <Link scroll={false} className="ghost" href={`/?${new URLSearchParams({ ...(params.q ? { q: params.q } : {}), ...(params.category ? { category: params.category } : {}), page: String(page - 1) })}`}>← Previous</Link>}<span>Page {page}</span>{hasNext && <Link scroll={false} className="ghost" href={`/?${new URLSearchParams({ ...(params.q ? { q: params.q } : {}), ...(params.category ? { category: params.category } : {}), page: String(page + 1) })}`}>Next →</Link>}</div></>
           ) : (
-            <div className="empty-state"><h3>No videos found</h3><p>Try another search or category.</p><Link scroll={false} href="/">Clear filters</Link></div>
+            <div className="empty-state"><h3>{settings.galleryEmptyTitle}</h3><p>{settings.galleryEmptyDescription}</p><Link scroll={false} href="/">{settings.galleryClearFiltersLabel}</Link></div>
           )}
         </section>
 

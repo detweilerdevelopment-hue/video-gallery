@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import type { FormEvent } from "react";
 
-export function GallerySearch({ initialQuery = "", category, autoFocus = false }: { initialQuery?: string; category?: string; autoFocus?: boolean }) {
+export function GallerySearch({ initialQuery = "", category, autoFocus = false, placeholder, buttonLabel }: { initialQuery?: string; category?: string; autoFocus?: boolean; placeholder: string; buttonLabel: string }) {
   const router = useRouter();
 
   function search(event: FormEvent<HTMLFormElement>) {
@@ -18,9 +18,9 @@ export function GallerySearch({ initialQuery = "", category, autoFocus = false }
 
   return (
     <form className="gallery-search" role="search" onSubmit={search}>
-      <label className="sr-only" htmlFor="gallery-query">Search videos</label>
-      <input id="gallery-query" name="q" defaultValue={initialQuery} placeholder="Search videos…" autoFocus={autoFocus} maxLength={80} />
-      <button className="ghost" type="submit">Search</button>
+      <label className="sr-only" htmlFor="gallery-query">{placeholder}</label>
+      <input id="gallery-query" name="q" defaultValue={initialQuery} placeholder={placeholder} autoFocus={autoFocus} maxLength={80} />
+      <button className="ghost" type="submit">{buttonLabel}</button>
     </form>
   );
 }

@@ -62,6 +62,14 @@ export interface SiteSettingsDocument {
   aboutPageContent: string;
   privacyPolicyLabel: string;
   privacyPolicyContent: string;
+  galleryEyebrow: string;
+  galleryTitle: string;
+  gallerySearchPlaceholder: string;
+  gallerySearchButton: string;
+  galleryAllLabel: string;
+  galleryEmptyTitle: string;
+  galleryEmptyDescription: string;
+  galleryClearFiltersLabel: string;
   ageGateTitle: string;
   ageGateDescription: string;
   ageGateAcceptLabel: string;
