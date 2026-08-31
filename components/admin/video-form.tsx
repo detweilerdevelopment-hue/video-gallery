@@ -2,6 +2,7 @@ import type { CategoryDocument, VideoDocument } from "@/lib/types";
 import { BackblazeUpload } from "./backblaze-upload";
 import { saveVideoAction } from "@/app/admin/actions";
 import { storageUrl } from "@/lib/storage";
+import { MediaSubmitActions } from "./media-submit-actions";
 
 function assetJson(asset?: VideoDocument["videoAsset"] | VideoDocument["poster"]) {
   return asset ? JSON.stringify({ ...asset, url: storageUrl(asset.key) }) : "";
@@ -21,11 +22,7 @@ export function VideoForm({ video, categories }: { video?: VideoDocument; catego
         <div className="form-group full"><BackblazeUpload kind="video" inputName="assetJson" initialJson={assetJson(video?.videoAsset)} label={video?.videoAsset ? "Replace video file" : "Upload video file"} /></div>
         <div className="form-group full"><BackblazeUpload kind="image" inputName="posterJson" initialJson={assetJson(video?.poster)} label="Poster image" /></div>
       </div>
-      <div className="form-actions">
-        <button className="ghost" type="submit" name="intent" value="save">{video ? "Save changes" : "Save draft"}</button>
-        {video?.status !== "published" && <button className="btn" type="submit" name="intent" value="publish">Save &amp; publish</button>}
-        <span className="subtle">Uploaded media is attached when you save or publish.</span>
-      </div>
+      <MediaSubmitActions isExisting={Boolean(video)} isPublished={video?.status === "published"} />
     </form>
   );
 }
