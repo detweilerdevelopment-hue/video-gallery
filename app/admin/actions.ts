@@ -86,6 +86,27 @@ export async function saveVideoAction(formData: FormData) {
   redirect(`/admin/videos/${savedId.toHexString()}/edit?success=${intent === "publish" ? "published" : "saved"}`);
 }
 
+export async function deleteVideoAction(formData: FormData) {
+  const session = await requireAdmin();
+  const id = new ObjectId(objectIdString.parse(formData.get("id")));
+  const db = await getDb();
+  const video = await db.collection<VideoDocument>("videos").findOne({ _id: id });
+  if (!video) redirect("/admin/videos");
+  await db.collection<SiteSettingsDocument>("siteSettings").updateOne(
+    { key: "main", featuredVideoId: id },
+    { $set: { featuredVideoId: null, updatedAt: new Date(), updatedBy: new ObjectId(session.userId) } },
+  );
+  await db.collection<VideoDocument>("videos").deleteOne({ _id: id });
+  await audit(session.userId, "video.deleted", "video", id);
+  revalidatePath("/");
+  revalidatePath(`/videos/${video.slug}`);
+  revalidatePath("/admin");
+  revalidatePath("/admin/videos");
+  revalidatePath("/admin/content");
+  revalidatePath("/sitemap.xml");
+  redirect("/admin/videos?success=deleted");
+}
+
 export async function setVideoStatusAction(formData: FormData) {
   const session = await requireAdmin();
   const idResult = objectIdString.safeParse(formData.get("id"));

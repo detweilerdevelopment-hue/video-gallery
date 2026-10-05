@@ -51,3 +51,20 @@ body{background:radial-gradient(circle at 85% 8%,rgba(155,226,124,.035),transpar
 .login-card{box-shadow:0 30px 90px rgba(0,0,0,.42)}
 .form-inline-error{flex-basis:100%;color:#ffaaaa;font-size:13px}
 @media(max-width:650px){.hero{padding-top:64px}.hero h1{font-size:clamp(44px,14vw,62px)}.section{padding-top:64px;padding-bottom:68px}.video-grid{gap:18px}.admin-grid{grid-template-columns:1fr}.entry-gate-card{max-height:calc(100vh - 28px);overflow-y:auto}}
+
+/* Client content and portrait gallery */
+.entry-gate-card p{white-space:pre-wrap;overflow-wrap:anywhere}
+.entry-gate-card h1,.entry-gate-card .eyebrow{overflow-wrap:anywhere}
+.entry-gate-mark{width:auto;min-width:52px;max-width:100%;padding:0 12px;border-radius:8px;overflow-wrap:anywhere}
+.topbar .brand{font-size:26px;letter-spacing:0;overflow-wrap:anywhere;line-height:1.2}
+.nav{height:auto;min-height:76px;padding-top:16px;padding-bottom:16px}
+.hero .eyebrow{font-size:16px;letter-spacing:0}
+.hero h1{font-size:60px;letter-spacing:0;overflow-wrap:anywhere}
+.video-grid{align-items:start}
+.thumb{aspect-ratio:auto;min-height:120px}
+.thumb img{display:block;width:100%;height:auto;max-height:640px;object-fit:contain}
+.thumb .poster-placeholder{aspect-ratio:16/10;height:auto}
+.video-card:hover .thumb img{transform:none}
+.upload-preview,.admin-thumbnail{object-fit:contain}
+@media(max-width:900px){.hero h1{font-size:52px}}
+@media(max-width:650px){.hero h1{font-size:40px}.topbar .brand{font-size:24px}}

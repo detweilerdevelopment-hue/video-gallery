@@ -15,6 +15,17 @@ export default async function ContentPage({ searchParams }: { searchParams: Prom
       {success && <div className="flash-success">Site content saved and public cache refreshed.</div>}
       {error && <div className="flash-error">{errorMessage}</div>}
       <form className="admin-form" action={saveSettingsAction}>
+        <section className="admin-panel"><h2>Entry screen labels</h2><div className="form-grid">
+          {([
+            ["entryGateBadge", "Badge (optional)", 12],
+            ["ageGateEyebrow", "Age screen small heading", 100],
+            ["cookieGateEyebrow", "Cookie screen small heading", 100],
+            ["deniedGateEyebrow", "Access unavailable small heading", 100],
+            ["deniedGateTitle", "Access unavailable heading", 200],
+            ["deniedGateRetryLabel", "Review answers button", 100],
+          ] as const).map(([name, label, maxLength]) => <div className="form-group" key={name}><label htmlFor={name}>{label}</label><input className="form-control" id={name} name={name} defaultValue={settings[name]} required={name !== "entryGateBadge"} minLength={name === "entryGateBadge" ? 0 : 2} maxLength={maxLength} /></div>)}
+          <div className="form-group full"><label htmlFor="deniedGateDescription">Access unavailable description</label><textarea className="form-control" id="deniedGateDescription" name="deniedGateDescription" defaultValue={settings.deniedGateDescription} required minLength={10} maxLength={1000} /></div>
+        </div></section>
         <section className="admin-panel"><h2>Brand and hero</h2><div className="form-grid">
           <div className="form-group"><label htmlFor="siteName">Site name</label><input className="form-control" id="siteName" name="siteName" defaultValue={settings.siteName} required maxLength={60} /></div>
           <div className="form-group"><label htmlFor="heroEyebrow">Eyebrow</label><input className="form-control" id="heroEyebrow" name="heroEyebrow" defaultValue={settings.heroEyebrow} required maxLength={60} /></div>

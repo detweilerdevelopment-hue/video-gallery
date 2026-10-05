@@ -71,6 +71,13 @@ export interface SiteSettingsDocument {
   galleryEmptyDescription: string;
   galleryClearFiltersLabel: string;
   ageGateTitle: string;
+  entryGateBadge: string;
+  ageGateEyebrow: string;
+  cookieGateEyebrow: string;
+  deniedGateEyebrow: string;
+  deniedGateTitle: string;
+  deniedGateDescription: string;
+  deniedGateRetryLabel: string;
   ageGateDescription: string;
   ageGateAcceptLabel: string;
   ageGateDeclineLabel: string;

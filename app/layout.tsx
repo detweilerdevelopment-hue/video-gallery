@@ -14,6 +14,13 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const settings = hasServerConfiguration() ? await getSettings() : DEFAULT_SETTINGS;
   const entryGateContent = {
+    entryGateBadge: settings.entryGateBadge,
+    ageGateEyebrow: settings.ageGateEyebrow,
+    cookieGateEyebrow: settings.cookieGateEyebrow,
+    deniedGateEyebrow: settings.deniedGateEyebrow,
+    deniedGateTitle: settings.deniedGateTitle,
+    deniedGateDescription: settings.deniedGateDescription,
+    deniedGateRetryLabel: settings.deniedGateRetryLabel,
     ageGateTitle: settings.ageGateTitle,
     ageGateDescription: settings.ageGateDescription,
     ageGateAcceptLabel: settings.ageGateAcceptLabel,

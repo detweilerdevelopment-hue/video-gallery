@@ -27,6 +27,23 @@ describe("Backblaze asset validation", () => {
 });
 
 describe("content validation", () => {
+  it("preserves entry-screen line breaks and editable rejection labels", () => {
+    const result = siteSettingsInputSchema.parse({
+      siteName: "FrameVault", heroEyebrow: "Curated films", heroTitle: "Watch remarkable stories",
+      heroDescription: "A complete homepage description.", heroImageAlt: "A production set",
+      ageGateDescription: "Adult audience only.\nAre you at least 18?",
+      deniedGateTitle: "Kein Zugang",
+      deniedGateDescription: "Zugang nicht erlaubt.\nBitte Antworten pruefen.",
+      deniedGateRetryLabel: "Antworten pruefen",
+      entryGateBadge: "",
+    });
+    expect(result.ageGateDescription).toContain("\n");
+    expect(result.deniedGateDescription).toContain("\n");
+    expect(result.deniedGateTitle).toBe("Kein Zugang");
+    expect(result.deniedGateRetryLabel).toBe("Antworten pruefen");
+    expect(result.entryGateBadge).toBe("");
+  });
+
   it("accepts a complete video draft", () => {
     expect(videoInputSchema.safeParse({ title: "Morning Light", description: "A quiet observational film with a complete description.", tags: "nature, morning", sortOrder: "2" }).success).toBe(true);
   });

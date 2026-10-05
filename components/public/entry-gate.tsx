@@ -8,6 +8,13 @@ type GateStep = "age" | "cookies" | "denied" | "open";
 const CONSENT_COOKIE = "framevault_cookie_consent";
 
 export interface EntryGateContent {
+  entryGateBadge: string;
+  ageGateEyebrow: string;
+  cookieGateEyebrow: string;
+  deniedGateEyebrow: string;
+  deniedGateTitle: string;
+  deniedGateDescription: string;
+  deniedGateRetryLabel: string;
   ageGateTitle: string;
   ageGateDescription: string;
   ageGateAcceptLabel: string;
@@ -60,11 +67,11 @@ export function EntryGate({ content }: { content: EntryGateContent }) {
         aria-labelledby="entry-gate-title"
         aria-describedby="entry-gate-description"
       >
-        <div className="entry-gate-mark" aria-hidden="true">FV</div>
+        {content.entryGateBadge && <div className="entry-gate-mark" aria-hidden="true">{content.entryGateBadge}</div>}
 
         {step === "age" && (
           <>
-            <div className="eyebrow">Age verification</div>
+            <div className="eyebrow">{content.ageGateEyebrow}</div>
             <h1 id="entry-gate-title">{content.ageGateTitle}</h1>
             <p id="entry-gate-description">{content.ageGateDescription}</p>
             <div className="entry-gate-actions">
@@ -76,7 +83,7 @@ export function EntryGate({ content }: { content: EntryGateContent }) {
 
         {step === "cookies" && (
           <>
-            <div className="eyebrow">Cookie consent</div>
+            <div className="eyebrow">{content.cookieGateEyebrow}</div>
             <h1 id="entry-gate-title">{content.cookieGateTitle}</h1>
             <p id="entry-gate-description">{content.cookieGateDescription}</p>
             <div className="entry-gate-actions">
@@ -88,12 +95,12 @@ export function EntryGate({ content }: { content: EntryGateContent }) {
 
         {step === "denied" && (
           <>
-            <div className="eyebrow">Access unavailable</div>
-            <h1 id="entry-gate-title">You cannot continue</h1>
+            <div className="eyebrow">{content.deniedGateEyebrow}</div>
+            <h1 id="entry-gate-title">{content.deniedGateTitle}</h1>
             <p id="entry-gate-description">
-              Access requires confirmation that you are at least 18 years old and acceptance of cookies.
+              {content.deniedGateDescription}
             </p>
-            <button className="ghost" type="button" onClick={() => setStep("age")} autoFocus>Review my answers</button>
+            <button className="ghost" type="button" onClick={() => setStep("age")} autoFocus>{content.deniedGateRetryLabel}</button>
           </>
         )}
       </section>

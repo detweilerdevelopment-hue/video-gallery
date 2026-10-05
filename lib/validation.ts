@@ -28,6 +28,13 @@ export const categoryInputSchema = z.object({
 });
 
 export const siteSettingsInputSchema = z.object({
+  entryGateBadge: z.string().trim().max(12).default(""),
+  ageGateEyebrow: z.string().trim().min(2).max(100).default("Age verification"),
+  cookieGateEyebrow: z.string().trim().min(2).max(100).default("Cookie consent"),
+  deniedGateEyebrow: z.string().trim().min(2).max(100).default("Access unavailable"),
+  deniedGateTitle: z.string().trim().min(2).max(200).default("You cannot continue"),
+  deniedGateDescription: z.string().trim().min(10).max(1000).default("Access requires confirmation that you are at least 18 years old and acceptance of cookies."),
+  deniedGateRetryLabel: z.string().trim().min(2).max(100).default("Review my answers"),
   siteName: z.string().trim().min(2).max(60),
   heroEyebrow: z.string().trim().min(2).max(60),
   heroTitle: z.string().trim().min(2).max(120),
