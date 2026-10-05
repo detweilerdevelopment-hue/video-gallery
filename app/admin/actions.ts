@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
 import { getDb } from "@/lib/db";
-import { parseStorageAsset, storedAssetExists } from "@/lib/storage";
+import { deleteStoredAsset, parseStorageAsset, storedAssetExists } from "@/lib/storage";
 import type { SiteSettingsDocument, VideoDocument, VideoStatus } from "@/lib/types";
 import { categoryInputSchema, objectIdString, parseFormData, siteSettingsInputSchema, slugify, videoInputSchema } from "@/lib/validation";
 import { uniqueSlug } from "@/lib/repositories";
@@ -92,6 +92,17 @@ export async function deleteVideoAction(formData: FormData) {
   const db = await getDb();
   const video = await db.collection<VideoDocument>("videos").findOne({ _id: id });
   if (!video) redirect("/admin/videos");
+  const keys = [...new Set([video.videoAsset?.key, video.poster?.key].filter((key): key is string => Boolean(key)))];
+  for (const key of keys) {
+    const sharedVideo = await db.collection<VideoDocument>("videos").findOne({ _id: { $ne: id }, $or: [{ "videoAsset.key": key }, { "poster.key": key }] });
+    const sharedBanner = await db.collection<SiteSettingsDocument>("siteSettings").findOne({ "heroImage.key": key });
+    if (sharedVideo || sharedBanner) redirect("/admin/videos?error=shared-media");
+  }
+  try {
+    for (const key of keys) await deleteStoredAsset(key);
+  } catch {
+    redirect("/admin/videos?error=delete-storage");
+  }
   await db.collection<SiteSettingsDocument>("siteSettings").updateOne(
     { key: "main", featuredVideoId: id },
     { $set: { featuredVideoId: null, updatedAt: new Date(), updatedBy: new ObjectId(session.userId) } },

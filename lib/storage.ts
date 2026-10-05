@@ -1,6 +1,6 @@
 import "server-only";
 
-import { HeadObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand, HeadObjectCommand, ListObjectVersionsCommand, S3Client } from "@aws-sdk/client-s3";
 import { getBackblazeEnv } from "@/lib/env";
 import type { StorageAsset } from "@/lib/types";
 import { storageAssetInputSchema } from "@/lib/validation";
@@ -28,6 +28,29 @@ export function getStorageClient() {
 export function storageUrl(key: string) {
   const encodedKey = key.split("/").map(encodeURIComponent).join("/");
   return `${getBackblazeEnv().publicBaseUrl}/${encodedKey}`;
+}
+
+export async function deleteStoredAsset(key: string) {
+  if (!/^(videos|images)\/[a-zA-Z0-9/_\-.]+$/.test(key) || key.includes("..")) throw new Error("Invalid storage key");
+  const { bucketName } = getBackblazeEnv();
+  const client = getStorageClient();
+  const versions: string[] = [];
+  let keyMarker: string | undefined;
+  let versionMarker: string | undefined;
+  // B2 requires version IDs for permanent deletion, including hidden versions.
+  do {
+    const page = await client.send(new ListObjectVersionsCommand({ Bucket: bucketName, Prefix: key, KeyMarker: keyMarker, VersionIdMarker: versionMarker }));
+    for (const item of [...(page.Versions ?? []), ...(page.DeleteMarkers ?? [])]) {
+      if (item.Key === key && item.VersionId) versions.push(item.VersionId);
+    }
+    if (!page.IsTruncated) break;
+    if (!page.NextKeyMarker) throw new Error("Missing storage pagination marker");
+    keyMarker = page.NextKeyMarker;
+    versionMarker = page.NextVersionIdMarker;
+  } while (true);
+  for (const versionId of versions) {
+    await client.send(new DeleteObjectCommand({ Bucket: bucketName, Key: key, VersionId: versionId }));
+  }
 }
 
 export function parseStorageAsset(value?: string | null, kind?: "video" | "image"): StorageAsset | null {

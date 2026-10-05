@@ -11,7 +11,7 @@ function SubmitButton() {
 export function DeleteVideoButton({ id, title }: { id: string; title: string }) {
   return (
     <form className="inline-form" action={deleteVideoAction} onSubmit={(event) => {
-      if (!window.confirm(`Permanently delete "${title}" from the gallery? This cannot be undone. Uploaded media files will remain in storage.`)) event.preventDefault();
+      if (!window.confirm(`Permanently delete "${title}", its uploaded video and thumbnail, including stored versions? This cannot be undone.`)) event.preventDefault();
     }}>
       <input type="hidden" name="id" value={id} />
       <SubmitButton />
