@@ -2,6 +2,9 @@
   "name": "framevault",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": ">=20.9 <25"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -19,7 +22,7 @@
     "bcryptjs": "3.0.3",
     "jose": "6.2.9",
     "mongodb": "6.20.0",
-    "next": "16.3.1",
+    "next": "16.3.8",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "zod": "4.4.3"
