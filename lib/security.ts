@@ -13,9 +13,31 @@ export function safeEqual(a: string, b: string) {
 }
 
 export function assertSameOrigin(request: Request) {
-  const origin = request.headers.get("origin");
-  const expected = new URL(getServerEnv().APP_URL).origin;
-  if (!origin || origin !== expected) throw new Error("Invalid request origin");
+  const originHeader = request.headers.get("origin");
+  if (!originHeader) throw new Error("Invalid request origin");
+
+  let origin: URL;
+  try {
+    origin = new URL(originHeader);
+  } catch {
+    throw new Error("Invalid request origin");
+  }
+  if (origin.protocol !== "http:" && origin.protocol !== "https:") throw new Error("Invalid request origin");
+
+  const configuredOrigin = new URL(getServerEnv().APP_URL).origin;
+  if (origin.origin === configuredOrigin) return;
+
+  // Managed hosts terminate TLS in a reverse proxy, so request.url can contain
+  // an internal hostname. Compare the browser Origin with the public Hostinger
+  // forwarding headers instead. Browsers cannot set Host or forwarded headers.
+  const forwardedHost = request.headers.get("x-forwarded-host")?.split(",", 1)[0]?.trim();
+  const requestHost = forwardedHost || request.headers.get("host")?.trim() || new URL(request.url).host;
+  const forwardedProtocol = request.headers.get("x-forwarded-proto")?.split(",", 1)[0]?.trim().toLowerCase();
+  const protocolMatches = !forwardedProtocol
+    || ((forwardedProtocol === "http" || forwardedProtocol === "https") && origin.protocol === `${forwardedProtocol}:`);
+  if (protocolMatches && origin.host.toLowerCase() === requestHost.toLowerCase()) return;
+
+  throw new Error("Invalid request origin");
 }
 
 export function escapeRegex(value: string) {
