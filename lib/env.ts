@@ -37,6 +37,17 @@ const backblazeSchema = z.object({
   B2_PUBLIC_BASE_URL: z.string().url(),
 });
 
+export function hasBackblazeConfiguration() {
+  return [
+    process.env.B2_KEY_ID,
+    process.env.B2_APPLICATION_KEY,
+    process.env.B2_BUCKET_NAME,
+    process.env.B2_REGION,
+    process.env.B2_ENDPOINT,
+    process.env.B2_PUBLIC_BASE_URL,
+  ].every((value) => Boolean(value?.trim()));
+}
+
 export function getBackblazeEnv() {
   const result = backblazeSchema.safeParse(process.env);
   if (!result.success) {

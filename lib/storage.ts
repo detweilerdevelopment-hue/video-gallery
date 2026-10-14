@@ -1,7 +1,14 @@
 import "server-only";
 
 import { DeleteObjectCommand, HeadObjectCommand, ListObjectVersionsCommand, S3Client } from "@aws-sdk/client-s3";
-import { getBackblazeEnv } from "@/lib/env";
+import { getBackblazeEnv, hasBackblazeConfiguration } from "@/lib/env";
+import {
+  assertStorageKey,
+  copyRemoteAssetToLocal,
+  deleteLocalAsset,
+  hasFilesystemStorage,
+  localAssetStatus,
+} from "@/lib/filesystem-storage";
 import type { StorageAsset } from "@/lib/types";
 import { storageAssetInputSchema } from "@/lib/validation";
 
@@ -25,13 +32,18 @@ export function getStorageClient() {
   return storageClient;
 }
 
-export function storageUrl(key: string) {
+function backblazeUrl(key: string) {
   const encodedKey = key.split("/").map(encodeURIComponent).join("/");
   return `${getBackblazeEnv().publicBaseUrl}/${encodedKey}`;
 }
 
-export async function deleteStoredAsset(key: string) {
-  if (!/^(videos|images)\/[a-zA-Z0-9/_\-.]+$/.test(key) || key.includes("..")) throw new Error("Invalid storage key");
+export function storageUrl(key: string) {
+  assertStorageKey(key);
+  const encodedKey = key.split("/").map(encodeURIComponent).join("/");
+  return hasFilesystemStorage() ? `/media/${encodedKey}` : backblazeUrl(key);
+}
+
+async function deleteBackblazeAsset(key: string) {
   const { bucketName } = getBackblazeEnv();
   const client = getStorageClient();
   const versions: string[] = [];
@@ -51,6 +63,24 @@ export async function deleteStoredAsset(key: string) {
   for (const versionId of versions) {
     await client.send(new DeleteObjectCommand({ Bucket: bucketName, Key: key, VersionId: versionId }));
   }
+}
+
+export async function deleteStoredAsset(key: string) {
+  assertStorageKey(key);
+  let deletedLocally = false;
+  if (hasFilesystemStorage()) deletedLocally = await deleteLocalAsset(key);
+
+  if (hasBackblazeConfiguration()) {
+    try {
+      await deleteBackblazeAsset(key);
+    } catch (error) {
+      // Once a file exists on Hostinger, stale Backblaze credentials should not
+      // prevent an administrator from deleting the authoritative local copy.
+      if (!deletedLocally) throw error;
+    }
+    return;
+  }
+  if (!hasFilesystemStorage()) getBackblazeEnv();
 }
 
 export function parseStorageAsset(value?: string | null, kind?: "video" | "image"): StorageAsset | null {
@@ -74,6 +104,11 @@ export function parseStorageAsset(value?: string | null, kind?: "video" | "image
 }
 
 export async function storedAssetExists(asset: StorageAsset) {
+  if (hasFilesystemStorage()) {
+    const local = await localAssetStatus(asset.key);
+    if (local.exists) return local.size === asset.size;
+  }
+  if (!hasBackblazeConfiguration()) return false;
   try {
     const env = getBackblazeEnv();
     const result = await getStorageClient().send(new HeadObjectCommand({ Bucket: env.bucketName, Key: asset.key }));
@@ -81,4 +116,16 @@ export async function storedAssetExists(asset: StorageAsset) {
   } catch {
     return false;
   }
+}
+
+export async function storedAssetIsLocal(asset: StorageAsset) {
+  if (!hasFilesystemStorage()) return false;
+  const local = await localAssetStatus(asset.key);
+  return local.exists && local.size === asset.size;
+}
+
+export async function migrateStoredAsset(asset: StorageAsset) {
+  if (!hasFilesystemStorage()) throw new Error("STORAGE_ROOT is not configured");
+  if (!hasBackblazeConfiguration()) throw new Error("Backblaze fallback is not configured");
+  return copyRemoteAssetToLocal(asset, backblazeUrl(asset.key));
 }

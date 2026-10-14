@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
 import { createStorageProbe, removeStorageProbe } from "@/lib/storage-probe";
+import { migrateReferencedAssets } from "@/lib/storage-migration";
 
 export async function createStorageProbeAction() {
   await requireAdmin();
@@ -25,4 +26,17 @@ export async function removeStorageProbeAction() {
   }
   revalidatePath("/admin/storage");
   redirect("/admin/storage?success=removed");
+}
+
+export async function migrateStorageAction() {
+  await requireAdmin();
+  let result: Awaited<ReturnType<typeof migrateReferencedAssets>>;
+  try {
+    result = await migrateReferencedAssets();
+  } catch {
+    redirect("/admin/storage?error=migration");
+  }
+  revalidatePath("/admin/storage");
+  revalidatePath("/");
+  redirect(`/admin/storage?success=migrated&count=${result.migrated}`);
 }

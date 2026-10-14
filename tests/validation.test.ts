@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { MAX_VIDEO_UPLOAD_BYTES } from "@/lib/storage-limits";
 import { categoryInputSchema, siteSettingsInputSchema, slugify, storageAssetInputSchema, videoInputSchema } from "@/lib/validation";
 
 describe("slugify", () => {
@@ -14,6 +15,12 @@ describe("slugify", () => {
 describe("Backblaze asset validation", () => {
   it("accepts stored media metadata", () => {
     expect(storageAssetInputSchema.safeParse({ key: "videos/example.mp4", contentType: "video/mp4", size: 1024 }).success).toBe(true);
+  });
+
+  it("accepts videos through 1.5 GB and rejects larger assets", () => {
+    const asset = { key: "videos/large.mp4", contentType: "video/mp4" };
+    expect(storageAssetInputSchema.safeParse({ ...asset, size: MAX_VIDEO_UPLOAD_BYTES }).success).toBe(true);
+    expect(storageAssetInputSchema.safeParse({ ...asset, size: MAX_VIDEO_UPLOAD_BYTES + 1 }).success).toBe(false);
   });
 
   it("accepts legacy media with a null original name", () => {

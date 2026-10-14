@@ -7,7 +7,7 @@ export default async function NewVideoPage({ searchParams }: { searchParams: Pro
   const errorMessage = error === "media-required"
     ? "Upload the video file and wait for the success message before publishing."
     : error === "storage-verification"
-      ? "The uploaded file could not be found in Backblaze. Upload it again and wait for completion."
+      ? "The uploaded file could not be found in storage. Upload it again and wait for completion."
       : error
         ? "Check the title, description, and uploaded files, then try again."
         : null;

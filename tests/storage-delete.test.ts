@@ -2,7 +2,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { send } = vi.hoisted(() => ({ send: vi.fn() }));
 vi.mock("server-only", () => ({}));
-vi.mock("@/lib/env", () => ({ getBackblazeEnv: () => ({ bucketName: "test-bucket", region: "test", endpoint: "https://example.com", keyId: "test", applicationKey: "test" }) }));
+vi.mock("@/lib/env", () => ({
+  getBackblazeEnv: () => ({ bucketName: "test-bucket", region: "test", endpoint: "https://example.com", keyId: "test", applicationKey: "test" }),
+  hasBackblazeConfiguration: () => true,
+}));
 vi.mock("@aws-sdk/client-s3", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@aws-sdk/client-s3")>();
   return { ...actual, S3Client: class { send = send; } };

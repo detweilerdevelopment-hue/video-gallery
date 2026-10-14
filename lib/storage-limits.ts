@@ -1,0 +1,7 @@
+export const MAX_VIDEO_UPLOAD_BYTES = 1_500_000_000;
+export const MAX_IMAGE_UPLOAD_BYTES = 15_000_000;
+
+export const VIDEO_UPLOAD_LIMIT_LABEL = "1.5 GB";
+export const IMAGE_UPLOAD_LIMIT_LABEL = "15 MB";
+
+export const STORAGE_UPLOAD_URL_EXPIRY_SECONDS = 4 * 60 * 60;

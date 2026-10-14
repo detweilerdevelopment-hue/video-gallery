@@ -1,5 +1,5 @@
 import type { CategoryDocument, VideoDocument } from "@/lib/types";
-import { BackblazeUpload } from "./backblaze-upload";
+import { StorageUpload } from "./storage-upload";
 import { saveVideoAction } from "@/app/admin/actions";
 import { storageUrl } from "@/lib/storage";
 import { MediaSubmitActions } from "./media-submit-actions";
@@ -19,8 +19,8 @@ export function VideoForm({ video, categories }: { video?: VideoDocument; catego
         <div className="form-group"><label htmlFor="tags">Tags</label><input className="form-control" id="tags" name="tags" defaultValue={video?.tags.join(", ")} placeholder="film, interview, coast" /><small>Comma-separated.</small></div>
         <div className="form-group"><label htmlFor="sortOrder">Sort order</label><input className="form-control" id="sortOrder" name="sortOrder" type="number" min="0" defaultValue={video?.sortOrder ?? 0} /></div>
         <div className="form-group full"><label className="checkbox"><input name="featured" type="checkbox" defaultChecked={video?.featured} /> Feature this video</label></div>
-        <div className="form-group full"><BackblazeUpload kind="video" inputName="assetJson" initialJson={assetJson(video?.videoAsset)} label={video?.videoAsset ? "Replace video file" : "Upload video file"} /></div>
-        <div className="form-group full"><BackblazeUpload kind="image" inputName="posterJson" initialJson={assetJson(video?.poster)} label="Poster image" /></div>
+        <div className="form-group full"><StorageUpload kind="video" inputName="assetJson" initialJson={assetJson(video?.videoAsset)} label={video?.videoAsset ? "Replace video file" : "Upload video file"} /></div>
+        <div className="form-group full"><StorageUpload kind="image" inputName="posterJson" initialJson={assetJson(video?.poster)} label="Poster image" /></div>
       </div>
       <MediaSubmitActions isExisting={Boolean(video)} isPublished={video?.status === "published"} />
     </form>
