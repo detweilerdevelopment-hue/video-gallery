@@ -134,7 +134,7 @@ export function StorageUpload({ kind, inputName, initialJson, label }: { kind: "
   return (
     <div className="upload-box" aria-busy={uploading}>
       <strong>{label}</strong>
-      <p>{kind === "video" ? "Upload a web-ready MP4 or WebM file. Add a separate poster image for the gallery thumbnail." : `JPG, PNG, WebP, or AVIF, up to ${IMAGE_UPLOAD_LIMIT_LABEL}.`}</p>
+      <p>{kind === "video" ? "Web-ready MP4 or WebM. Upload a poster image separately for gallery thumbnails." : `JPG, PNG, WebP, or AVIF, up to ${IMAGE_UPLOAD_LIMIT_LABEL}.`}</p>
       {asset?.url && (kind === "video"
         ? <video className="upload-preview" src={asset.url} controls preload="metadata" />
         : <img className="upload-preview" src={asset.url} alt={`${label} preview`} />)}
