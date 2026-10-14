@@ -14,7 +14,12 @@ async function main() {
   const region = required("B2_REGION");
   const bucketName = required("B2_BUCKET_NAME");
   const appOrigin = new URL(required("APP_URL")).origin;
-  const allowedOrigins = [...new Set([appOrigin, "http://localhost:3000", "https://*.netlify.app"])];
+  const additionalOrigins = String(process.env.CORS_ORIGINS || "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean)
+    .map((origin) => new URL(origin).origin);
+  const allowedOrigins = [...new Set([appOrigin, "http://localhost:3000", ...additionalOrigins])];
   const client = new S3Client({
     endpoint,
     region,
